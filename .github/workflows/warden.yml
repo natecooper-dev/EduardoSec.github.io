@@ -1,0 +1,32 @@
+name: warden
+
+# Run warden on every PR and on pushes to main. The action below scans
+# .github/workflows/ for CI/CD security issues and fails the check if any
+# finding at or above the configured severity is reported.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel in-progress runs on the same ref so duplicate pushes do not pile up.
+concurrency:
+  group: warden-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read   # repo checkout only, warden never needs write
+
+jobs:
+  scan:
+    name: Scan workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run warden
+        uses: projectwarden/warden@7f13104599d0c765952bc981e370b7c585e9f818  # v1.0.0
+        with:
+          fail-on: high
