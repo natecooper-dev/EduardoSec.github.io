@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: read  # required to read repository contents
+  pages: write  # required to deploy to GitHub Pages
+  id-token: write  # required for OIDC token exchange (cloud auth, sigstore, attestations)
 
 concurrency:
   group: "pages"
@@ -25,6 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Setup Hugo
